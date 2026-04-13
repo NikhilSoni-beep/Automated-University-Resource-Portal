@@ -1,0 +1,1615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>UniPortal — Automated University Resource Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,300&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════════════════
+   DESIGN LANGUAGE: Academic Brutalism meets Clean Data
+   Color: Deep Indigo + Warm Amber + Off-White
+   Font: Fraunces (editorial display) + Outfit (clean UI)
+   Vibe: A serious academic tool that feels premium
+═══════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --indigo:   #1a1f5e;
+  --indigo-m: #252b7a;
+  --indigo-l: #2e3694;
+  --indigo-xl:#3d44b5;
+  --amber:    #f59e0b;
+  --amber-l:  #fcd34d;
+  --amber-dk: #d97706;
+  --cream:    #faf8f3;
+  --white:    #ffffff;
+  --slate:    #64748b;
+  --slate-l:  #94a3b8;
+  --dark:     #0f1235;
+  --success:  #10b981;
+  --danger:   #ef4444;
+  --info:     #3b82f6;
+  --card-bg:  #ffffff;
+  --border:   #e2e8f0;
+  --text:     #1e2040;
+  --muted:    #64748b;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Outfit',sans-serif;background:var(--cream);color:var(--text);overflow-x:hidden;min-height:100vh}
+body.modal-open{overflow:hidden}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--cream)}
+::-webkit-scrollbar-thumb{background:var(--indigo-xl);border-radius:3px}
+
+/* ══════════════ PAGES ══════════════ */
+.page{display:none;min-height:100vh}
+.page.active{display:block}
+
+/* ══════════════ LANDING ══════════════ */
+#page-landing{background:var(--dark);color:var(--white);position:relative;overflow:hidden}
+.land-grid{
+  position:absolute;inset:0;
+  background-image:linear-gradient(rgba(61,68,181,.15) 1px,transparent 1px),linear-gradient(90deg,rgba(61,68,181,.15) 1px,transparent 1px);
+  background-size:56px 56px;
+  mask-image:radial-gradient(ellipse at 50% 0%,black 40%,transparent 80%);
+  pointer-events:none;
+}
+.land-glow{
+  position:absolute;top:-200px;left:50%;transform:translateX(-50%);
+  width:700px;height:700px;border-radius:50%;
+  background:radial-gradient(circle,rgba(61,68,181,.35) 0%,transparent 70%);
+  pointer-events:none;
+}
+.land-inner{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:0 2rem}
+
+/* NAV */
+.land-nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.5rem 0;border-bottom:1px solid rgba(255,255,255,.07);
+}
+.logo{display:flex;align-items:center;gap:.6rem;font-family:'Fraunces',serif;font-weight:700;font-size:1.4rem;color:var(--white);text-decoration:none}
+.logo-dot{width:10px;height:10px;border-radius:50%;background:var(--amber);flex-shrink:0}
+.nav-btns{display:flex;gap:.75rem;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.55rem 1.2rem;border-radius:8px;font-family:'Outfit',sans-serif;font-weight:600;font-size:.875rem;cursor:pointer;border:none;transition:all .2s;text-decoration:none;white-space:nowrap}
+.btn-ghost{background:transparent;color:rgba(255,255,255,.75);border:1px solid rgba(255,255,255,.2)}
+.btn-ghost:hover{background:rgba(255,255,255,.07);color:var(--white)}
+.btn-primary{background:var(--amber);color:var(--dark)}
+.btn-primary:hover{background:var(--amber-l);transform:translateY(-1px);box-shadow:0 6px 20px rgba(245,158,11,.35)}
+.btn-indigo{background:var(--indigo-xl);color:var(--white)}
+.btn-indigo:hover{background:var(--indigo-l);transform:translateY(-1px)}
+.btn-outline{background:transparent;color:var(--indigo);border:1.5px solid var(--indigo-xl)}
+.btn-outline:hover{background:var(--indigo);color:var(--white)}
+.btn-sm{padding:.4rem .9rem;font-size:.8rem}
+.btn-lg{padding:.85rem 2rem;font-size:1rem;border-radius:10px}
+.btn-danger{background:var(--danger);color:white}
+.btn-danger:hover{background:#dc2626}
+.btn-success{background:var(--success);color:white}
+.btn-success:hover{background:#059669}
+
+/* HERO */
+.hero{padding:7rem 0 5rem;text-align:center}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:.5rem;
+  background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);
+  color:var(--amber-l);padding:.35rem 1rem;border-radius:999px;
+  font-family:'JetBrains Mono',monospace;font-size:.75rem;letter-spacing:.06em;margin-bottom:2rem;
+}
+.hero-badge::before{content:'●';font-size:.5rem;animation:blink 1.6s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+h1.hero-title{
+  font-family:'Fraunces',serif;font-weight:700;
+  font-size:clamp(2.8rem,6vw,5rem);line-height:1.05;letter-spacing:-.03em;
+  margin-bottom:1.5rem;
+}
+h1.hero-title span{color:var(--amber)}
+.hero-sub{font-size:1.15rem;color:rgba(255,255,255,.6);max-width:560px;margin:0 auto 2.5rem;line-height:1.75}
+.hero-ctas{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:4rem}
+.hero-roles{display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-top:1rem}
+.role-pill{
+  display:flex;align-items:center;gap:.5rem;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  border-radius:10px;padding:.6rem 1.1rem;cursor:pointer;
+  transition:all .25s;
+}
+.role-pill:hover{background:rgba(61,68,181,.3);border-color:var(--indigo-xl);transform:translateY(-2px)}
+.role-pill .ri{font-size:1.1rem}
+.role-pill span{font-size:.85rem;font-weight:600;color:rgba(255,255,255,.85)}
+
+/* FEATURE STRIP */
+.feat-strip{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1.5px;background:rgba(255,255,255,.07);
+  border-radius:16px;overflow:hidden;margin:3rem 0;
+}
+.feat-item{
+  background:rgba(255,255,255,.03);padding:2rem 1.75rem;
+  transition:background .2s;
+}
+.feat-item:hover{background:rgba(61,68,181,.15)}
+.feat-num{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--amber);letter-spacing:.1em;margin-bottom:.75rem}
+.feat-item h3{font-size:1rem;font-weight:700;margin-bottom:.4rem}
+.feat-item p{font-size:.85rem;color:rgba(255,255,255,.5);line-height:1.6}
+
+/* PROBLEM SECTION */
+.problem{padding:5rem 0;border-top:1px solid rgba(255,255,255,.06)}
+.section-label{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);margin-bottom:.75rem}
+.problem h2{font-family:'Fraunces',serif;font-size:2.4rem;font-weight:700;letter-spacing:-.02em;margin-bottom:1rem}
+.problem-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;margin-top:3rem}
+.issue-list{list-style:none;display:flex;flex-direction:column;gap:1rem}
+.issue-item{
+  display:flex;gap:1rem;align-items:flex-start;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+  border-radius:12px;padding:1.2rem;
+}
+.issue-icon{font-size:1.4rem;flex-shrink:0}
+.issue-item h4{font-size:.95rem;font-weight:600;margin-bottom:.3rem}
+.issue-item p{font-size:.82rem;color:rgba(255,255,255,.5);line-height:1.5}
+.solution-box{
+  background:linear-gradient(135deg,rgba(61,68,181,.25),rgba(245,158,11,.1));
+  border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:2.5rem;
+}
+.solution-box h3{font-family:'Fraunces',serif;font-size:1.5rem;margin-bottom:1.5rem}
+.sol-step{display:flex;align-items:center;gap:1rem;padding:.75rem 0;border-bottom:1px solid rgba(255,255,255,.07)}
+.sol-step:last-child{border-bottom:none}
+.sol-step .num{
+  width:28px;height:28px;border-radius:50%;background:var(--amber);color:var(--dark);
+  display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0;
+}
+.sol-step span{font-size:.9rem;color:rgba(255,255,255,.8)}
+
+/* STACK SECTION */
+.stack{padding:5rem 0;border-top:1px solid rgba(255,255,255,.06)}
+.stack h2{font-family:'Fraunces',serif;font-size:2.2rem;font-weight:700;letter-spacing:-.02em;margin-bottom:.5rem}
+.stack-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:2.5rem}
+.stack-card{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:14px;padding:1.5rem;text-align:center;
+  transition:all .25s;
+}
+.stack-card:hover{background:rgba(61,68,181,.2);border-color:rgba(61,68,181,.5);transform:translateY(-4px)}
+.stack-card .icon{font-size:2rem;margin-bottom:.75rem}
+.stack-card h4{font-size:.9rem;font-weight:700;margin-bottom:.25rem}
+.stack-card p{font-size:.75rem;color:rgba(255,255,255,.45)}
+
+/* LAND FOOTER */
+.land-footer{
+  border-top:1px solid rgba(255,255,255,.07);
+  padding:1.5rem 0;display:flex;align-items:center;justify-content:space-between;
+  font-size:.8rem;color:rgba(255,255,255,.35);
+}
+
+/* ══════════════ AUTH PAGE ══════════════ */
+#page-auth{
+  min-height:100vh;display:flex;align-items:stretch;
+  background:var(--dark);
+}
+.auth-left{
+  flex:1;background:linear-gradient(160deg,var(--indigo) 0%,var(--dark) 100%);
+  padding:3rem;display:flex;flex-direction:column;justify-content:space-between;
+  min-height:100vh;position:relative;overflow:hidden;
+}
+.auth-left::before{
+  content:'';position:absolute;top:-100px;right:-100px;
+  width:400px;height:400px;border-radius:50%;
+  background:radial-gradient(circle,rgba(245,158,11,.15),transparent 70%);
+  pointer-events:none;
+}
+.auth-left-content{flex:1;display:flex;flex-direction:column;justify-content:center;padding:2rem 0}
+.auth-left h2{font-family:'Fraunces',serif;font-size:2rem;font-weight:700;color:var(--white);margin-bottom:1rem}
+.auth-left p{color:rgba(255,255,255,.55);line-height:1.75;font-size:.95rem;margin-bottom:2rem}
+.auth-feat{display:flex;gap:.75rem;align-items:flex-start;margin-bottom:1.2rem}
+.auth-feat .af-icon{font-size:1.1rem;flex-shrink:0;margin-top:.1rem}
+.auth-feat div h5{font-size:.9rem;font-weight:600;color:var(--white);margin-bottom:.15rem}
+.auth-feat div p{font-size:.8rem;color:rgba(255,255,255,.45);line-height:1.4}
+.auth-right{
+  width:480px;background:var(--cream);
+  display:flex;align-items:center;justify-content:center;padding:3rem;
+}
+.auth-box{width:100%}
+.auth-box h3{font-family:'Fraunces',serif;font-size:1.75rem;font-weight:700;color:var(--indigo);margin-bottom:.35rem}
+.auth-box .sub{font-size:.9rem;color:var(--muted);margin-bottom:2rem}
+.role-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;margin-bottom:1.75rem;background:var(--border);border-radius:10px;padding:.3rem}
+.role-tab{
+  padding:.6rem;text-align:center;border-radius:7px;cursor:pointer;
+  font-size:.8rem;font-weight:600;color:var(--muted);transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:.2rem;border:none;background:transparent;
+}
+.role-tab .rt-icon{font-size:1.1rem}
+.role-tab.active{background:var(--white);color:var(--indigo);box-shadow:0 1px 6px rgba(0,0,0,.1)}
+.form-group{margin-bottom:1.1rem}
+.form-group label{display:block;font-size:.8rem;font-weight:600;color:var(--text);margin-bottom:.4rem}
+.form-group input,.form-group select{
+  width:100%;padding:.7rem 1rem;border:1.5px solid var(--border);border-radius:8px;
+  font-family:'Outfit',sans-serif;font-size:.9rem;color:var(--text);background:var(--white);
+  transition:border-color .2s,box-shadow .2s;outline:none;
+}
+.form-group input:focus,.form-group select:focus{border-color:var(--indigo-xl);box-shadow:0 0 0 3px rgba(61,68,181,.12)}
+.credentials-hint{
+  background:rgba(61,68,181,.07);border:1px solid rgba(61,68,181,.15);
+  border-radius:8px;padding:.85rem 1rem;margin-bottom:1.25rem;
+}
+.credentials-hint p{font-size:.78rem;color:var(--indigo);font-family:'JetBrains Mono',monospace;line-height:1.7}
+.auth-error{color:var(--danger);font-size:.82rem;margin-top:.5rem;display:none}
+.btn-full{width:100%;justify-content:center;padding:.8rem}
+.auth-back{margin-top:1.25rem;text-align:center;font-size:.83rem;color:var(--muted);cursor:pointer}
+.auth-back a{color:var(--indigo-xl);text-decoration:none;font-weight:600}
+
+/* ══════════════ DASHBOARD SHELL ══════════════ */
+#page-dashboard{display:none;min-height:100vh;background:#f1f5f9}
+#page-dashboard.active{display:flex}
+.sidebar{
+  width:260px;background:var(--indigo);color:var(--white);
+  display:flex;flex-direction:column;min-height:100vh;flex-shrink:0;
+  transition:width .3s;
+}
+.sb-header{
+  padding:1.5rem;border-bottom:1px solid rgba(255,255,255,.1);
+  display:flex;align-items:center;gap:.75rem;
+}
+.sb-logo{font-family:'Fraunces',serif;font-weight:700;font-size:1.15rem}
+.sb-user-role{
+  font-size:.65rem;background:var(--amber);color:var(--dark);
+  padding:.15rem .5rem;border-radius:999px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+}
+.sb-nav{flex:1;padding:1.25rem .75rem;overflow-y:auto}
+.sb-section-label{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);padding:.5rem .75rem;margin-top:1rem}
+.sb-link{
+  display:flex;align-items:center;gap:.75rem;padding:.7rem .75rem;
+  border-radius:9px;cursor:pointer;font-size:.875rem;font-weight:500;
+  color:rgba(255,255,255,.65);transition:all .2s;margin-bottom:.15rem;border:none;background:transparent;width:100%;text-align:left;
+}
+.sb-link:hover{background:rgba(255,255,255,.08);color:var(--white)}
+.sb-link.active{background:rgba(255,255,255,.12);color:var(--white);font-weight:600}
+.sb-link .sb-icon{font-size:1rem;width:1.1rem;flex-shrink:0}
+.sb-link .sb-badge{margin-left:auto;background:var(--amber);color:var(--dark);border-radius:999px;font-size:.65rem;font-weight:700;padding:.1rem .4rem}
+.sb-footer{
+  padding:1rem;border-top:1px solid rgba(255,255,255,.1);
+}
+.sb-user-card{
+  display:flex;align-items:center;gap:.75rem;padding:.6rem;
+  background:rgba(255,255,255,.06);border-radius:10px;
+}
+.sb-avatar{
+  width:36px;height:36px;border-radius:50%;background:var(--amber);
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;color:var(--dark);flex-shrink:0;
+}
+.sb-user-info .name{font-size:.85rem;font-weight:600}
+.sb-user-info .email{font-size:.72rem;color:rgba(255,255,255,.45)}
+.sb-logout{margin-left:auto;background:transparent;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-size:1.1rem;padding:.2rem;transition:color .2s}
+.sb-logout:hover{color:var(--danger)}
+
+/* MAIN AREA */
+.main-area{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.top-bar{
+  background:var(--white);border-bottom:1px solid var(--border);
+  padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+.top-bar h2{font-family:'Fraunces',serif;font-size:1.35rem;font-weight:700;color:var(--indigo)}
+.top-bar-right{display:flex;align-items:center;gap:1rem}
+.search-bar{
+  display:flex;align-items:center;gap:.5rem;
+  background:var(--cream);border:1.5px solid var(--border);border-radius:8px;
+  padding:.45rem .85rem;
+}
+.search-bar input{border:none;background:transparent;font-family:'Outfit',sans-serif;font-size:.875rem;color:var(--text);outline:none;width:200px}
+.notif-btn{
+  width:36px;height:36px;border-radius:8px;background:var(--cream);
+  border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:1rem;position:relative;transition:background .2s;
+}
+.notif-btn:hover{background:var(--border)}
+.notif-dot{
+  position:absolute;top:5px;right:5px;width:8px;height:8px;
+  background:var(--amber);border-radius:50%;border:1.5px solid var(--white);
+}
+.content-area{flex:1;padding:2rem;overflow-y:auto}
+
+/* ══════════════ PANEL SECTIONS ══════════════ */
+.panel{display:none}
+.panel.active{display:block}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;margin-bottom:2rem}
+.stat-card{
+  background:var(--white);border-radius:14px;padding:1.4rem;
+  border:1px solid var(--border);transition:transform .2s,box-shadow .2s;
+}
+.stat-card:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,0,0,.07)}
+.stat-card .sc-label{font-size:.75rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem}
+.stat-card .sc-val{font-family:'Fraunces',serif;font-size:2rem;font-weight:700;color:var(--indigo);line-height:1}
+.stat-card .sc-sub{font-size:.78rem;color:var(--muted);margin-top:.3rem}
+.stat-card .sc-icon{font-size:1.5rem;float:right;margin-top:-1.8rem}
+
+/* GRID LAYOUTS */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+
+/* CARD */
+.card{background:var(--white);border-radius:14px;border:1px solid var(--border);overflow:hidden}
+.card-header{
+  padding:1.1rem 1.4rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.card-header h3{font-size:.95rem;font-weight:700;color:var(--indigo)}
+.card-body{padding:1.4rem}
+
+/* TABLE */
+.data-table{width:100%;border-collapse:collapse;font-size:.85rem}
+.data-table th{
+  text-align:left;padding:.65rem 1rem;
+  background:#f8fafc;color:var(--muted);font-size:.75rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border);
+}
+.data-table td{padding:.75rem 1rem;border-bottom:1px solid #f1f5f9;vertical-align:middle}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr:hover td{background:#f8fafc}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .6rem;border-radius:999px;font-size:.72rem;font-weight:600}
+.badge-green{background:#dcfce7;color:#166534}
+.badge-amber{background:#fef3c7;color:#92400e}
+.badge-blue{background:#dbeafe;color:#1e40af}
+.badge-red{background:#fee2e2;color:#991b1b}
+.badge-purple{background:#ede9fe;color:#5b21b6}
+.badge-slate{background:#f1f5f9;color:#475569}
+
+/* ANNOUNCEMENT ITEM */
+.ann-item{
+  display:flex;gap:1rem;padding:1rem 0;
+  border-bottom:1px solid var(--border);
+}
+.ann-item:last-child{border-bottom:none}
+.ann-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.ann-content h5{font-size:.875rem;font-weight:600;margin-bottom:.2rem}
+.ann-content p{font-size:.8rem;color:var(--muted);line-height:1.5}
+.ann-meta{font-size:.72rem;color:var(--slate-l);margin-top:.25rem}
+
+/* COURSE CARD */
+.course-card{
+  background:var(--white);border:1px solid var(--border);border-radius:14px;
+  overflow:hidden;transition:all .25s;cursor:pointer;
+}
+.course-card:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(0,0,0,.1)}
+.course-card-top{height:8px}
+.course-card-body{padding:1.25rem}
+.course-card-body h4{font-size:.9rem;font-weight:700;color:var(--indigo);margin-bottom:.3rem}
+.course-card-body .cc-code{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);margin-bottom:.6rem}
+.course-meta{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.75rem}
+.course-footer{
+  padding:.75rem 1.25rem;border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:.78rem;color:var(--muted);
+}
+
+/* FORM PANEL */
+.form-panel{background:var(--white);border-radius:14px;border:1px solid var(--border);padding:1.75rem}
+.form-panel h3{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:700;color:var(--indigo);margin-bottom:.35rem}
+.form-panel .fp-sub{font-size:.85rem;color:var(--muted);margin-bottom:1.5rem}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.form-group-d{margin-bottom:1.1rem}
+.form-group-d label{display:block;font-size:.8rem;font-weight:600;color:var(--text);margin-bottom:.4rem}
+.form-group-d input,.form-group-d select,.form-group-d textarea{
+  width:100%;padding:.65rem .9rem;border:1.5px solid var(--border);border-radius:8px;
+  font-family:'Outfit',sans-serif;font-size:.875rem;color:var(--text);background:var(--cream);
+  transition:border-color .2s;outline:none;
+}
+.form-group-d input:focus,.form-group-d select:focus,.form-group-d textarea:focus{
+  border-color:var(--indigo-xl);background:var(--white);
+}
+.form-group-d textarea{resize:vertical;min-height:80px}
+
+/* TIMETABLE */
+.timetable{border-radius:12px;overflow:hidden;border:1px solid var(--border)}
+.tt-header{display:grid;grid-template-columns:80px repeat(6,1fr);background:var(--indigo);color:var(--white)}
+.tt-header div,.tt-cell{padding:.6rem .5rem;font-size:.75rem;font-weight:600;text-align:center}
+.tt-row{display:grid;grid-template-columns:80px repeat(6,1fr);border-bottom:1px solid var(--border)}
+.tt-row:last-child{border-bottom:none}
+.tt-row:nth-child(odd){background:#f8fafc}
+.tt-time{background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:600;color:var(--muted);border-right:1px solid var(--border);font-family:'JetBrains Mono',monospace}
+.tt-slot{
+  padding:.5rem .4rem;font-size:.72rem;line-height:1.3;text-align:center;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.15rem;
+}
+.tt-slot.filled{background:linear-gradient(135deg,rgba(61,68,181,.08),rgba(61,68,181,.03));border-left:2px solid var(--indigo-xl);font-weight:600;color:var(--indigo)}
+.tt-slot.lab{background:linear-gradient(135deg,rgba(245,158,11,.1),rgba(245,158,11,.03));border-left:2px solid var(--amber);color:#92400e;font-weight:600}
+.tt-slot.free{color:var(--slate-l)}
+.tt-subj{font-size:.7rem;font-weight:700}
+.tt-room{font-size:.62rem;color:var(--muted)}
+
+/* FACULTY CARD */
+.faculty-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+.fac-card{
+  background:var(--white);border:1px solid var(--border);border-radius:14px;
+  padding:1.5rem;text-align:center;transition:all .25s;cursor:pointer;
+}
+.fac-card:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(0,0,0,.08)}
+.fac-avatar{
+  width:64px;height:64px;border-radius:50%;margin:0 auto .85rem;
+  display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:700;color:var(--white);
+}
+.fac-name{font-size:.95rem;font-weight:700;color:var(--indigo);margin-bottom:.25rem}
+.fac-dept{font-size:.78rem;color:var(--muted);margin-bottom:.75rem}
+.fac-tags{display:flex;flex-wrap:wrap;gap:.35rem;justify-content:center}
+.fac-tag{font-size:.68rem;background:#ede9fe;color:#5b21b6;padding:.18rem .5rem;border-radius:4px;font-weight:600}
+
+/* NOTICE BOARD */
+.notice-item{
+  background:var(--white);border:1px solid var(--border);border-left:4px solid var(--indigo-xl);
+  border-radius:10px;padding:1.1rem 1.25rem;margin-bottom:.85rem;transition:box-shadow .2s;cursor:pointer;
+}
+.notice-item:hover{box-shadow:0 4px 16px rgba(0,0,0,.08)}
+.notice-item.urgent{border-left-color:var(--danger)}
+.notice-item.info{border-left-color:var(--info)}
+.notice-item.event{border-left-color:var(--success)}
+.notice-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem}
+.notice-title{font-size:.9rem;font-weight:700;color:var(--indigo)}
+.notice-body{font-size:.82rem;color:var(--muted);line-height:1.6}
+.notice-meta{font-size:.72rem;color:var(--slate-l);margin-top:.4rem}
+
+/* FILTER ROW */
+.filter-row{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1.25rem}
+.filter-chip{
+  padding:.4rem .9rem;border-radius:999px;font-size:.8rem;font-weight:600;cursor:pointer;
+  border:1.5px solid var(--border);background:var(--white);color:var(--muted);transition:all .2s;
+}
+.filter-chip.active,.filter-chip:hover{background:var(--indigo);color:var(--white);border-color:var(--indigo)}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:3rem;color:var(--muted)}
+.empty-state .es-icon{font-size:3rem;margin-bottom:.75rem;opacity:.4}
+.empty-state h4{font-size:1rem;font-weight:600;margin-bottom:.3rem}
+.empty-state p{font-size:.85rem}
+
+/* PROGRESS BAR */
+.progress-bar{height:6px;background:var(--border);border-radius:999px;overflow:hidden;margin-top:.5rem}
+.progress-fill{height:100%;border-radius:999px;background:var(--indigo-xl);transition:width 1s ease}
+
+/* MODAL */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;
+  display:none;align-items:center;justify-content:center;backdrop-filter:blur(3px);
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:var(--white);border-radius:18px;width:90%;max-width:520px;
+  max-height:85vh;overflow-y:auto;
+  box-shadow:0 20px 60px rgba(0,0,0,.2);
+  animation:modal-in .25s ease;
+}
+@keyframes modal-in{from{opacity:0;transform:translateY(20px) scale(.97)}to{opacity:1;transform:none}}
+.modal-header{
+  padding:1.4rem 1.75rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--white);z-index:1;
+}
+.modal-header h3{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:700;color:var(--indigo)}
+.modal-close{background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--muted);padding:.2rem;transition:color .2s}
+.modal-close:hover{color:var(--danger)}
+.modal-body{padding:1.75rem}
+
+/* TOAST */
+#toast{
+  position:fixed;bottom:2rem;right:2rem;z-index:2000;
+  background:var(--indigo);color:var(--white);
+  padding:.85rem 1.4rem;border-radius:12px;font-size:.875rem;font-weight:500;
+  box-shadow:0 8px 30px rgba(0,0,0,.2);
+  transform:translateX(150%);transition:transform .35s cubic-bezier(.4,0,.2,1);
+  display:flex;align-items:center;gap:.6rem;max-width:320px;
+}
+#toast.show{transform:translateX(0)}
+#toast.success{background:var(--success)}
+#toast.error{background:var(--danger)}
+#toast.warning{background:var(--amber-dk)}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .auth-left{display:none}
+  .auth-right{width:100%;min-height:100vh}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .grid-3,.faculty-grid{grid-template-columns:1fr 1fr}
+  .feat-strip{grid-template-columns:1fr}
+  .stack-grid{grid-template-columns:1fr 1fr}
+  .problem-grid{grid-template-columns:1fr}
+  .sidebar{width:56px}
+  .sb-link span,.sb-logo,.sb-user-info,.sb-user-role,.sb-section-label,.sb-badge{display:none}
+  .sb-header{justify-content:center;padding:1.2rem .5rem}
+  .sb-footer{padding:.5rem}
+}
+@media(max-width:600px){
+  .stats-row,.grid-2,.grid-3,.faculty-grid,.form-row{grid-template-columns:1fr}
+  .hero-title{font-size:2rem}
+  .content-area{padding:1.25rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ TOAST ══════════════ -->
+<div id="toast">✓ Success</div>
+
+<!-- ══════════════ MODAL ══════════════ -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <h3 id="modal-title">Details</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PAGE: LANDING
+══════════════════════════════════════════ -->
+<div id="page-landing" class="page active">
+  <div class="land-grid"></div>
+  <div class="land-glow"></div>
+  <div class="land-inner">
+
+    <!-- NAV -->
+    <nav class="land-nav">
+      <a href="#" class="logo"><div class="logo-dot"></div>UniPortal</a>
+      <div class="nav-btns">
+        <button class="btn btn-ghost" onclick="showAuth()">Sign In</button>
+        <button class="btn btn-primary" onclick="showAuth()">Get Started →</button>
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-badge">Project-Based Learning — 3rd Semester · Nikhil Soni</div>
+      <h1 class="hero-title">One Portal.<br><span>Every Resource.</span></h1>
+      <p class="hero-sub">A centralized, role-based academic platform that unifies course data, faculty info, schedules, and announcements — in real time.</p>
+      <div class="hero-ctas">
+        <button class="btn btn-primary btn-lg" onclick="showAuth()">Launch Portal →</button>
+        <button class="btn btn-ghost btn-lg" onclick="document.getElementById('section-problem').scrollIntoView({behavior:'smooth'})">Learn More</button>
+      </div>
+      <div style="font-size:.8rem;color:rgba(255,255,255,.3);margin-bottom:1rem">Sign in as:</div>
+      <div class="hero-roles">
+        <div class="role-pill" onclick="quickLogin('student')"><span class="ri">🎓</span><span>Student</span></div>
+        <div class="role-pill" onclick="quickLogin('faculty')"><span class="ri">👨‍🏫</span><span>Faculty</span></div>
+        <div class="role-pill" onclick="quickLogin('admin')"><span class="ri">🛡️</span><span>Admin</span></div>
+      </div>
+    </div>
+
+    <!-- FEAT STRIP -->
+    <div class="feat-strip">
+      <div class="feat-item">
+        <div class="feat-num">01 — CORE</div>
+        <h3>Centralized Data</h3>
+        <p>All critical course, faculty, and schedule data in one structured, searchable place.</p>
+      </div>
+      <div class="feat-item">
+        <div class="feat-num">02 — SECURITY</div>
+        <h3>JWT Role-Based Auth</h3>
+        <p>Secure authentication with differentiated access for Students, Faculty, and Admins.</p>
+      </div>
+      <div class="feat-item">
+        <div class="feat-num">03 — UX</div>
+        <h3>Real-Time Dashboards</h3>
+        <p>Dynamic updates pushed to dashboards without page reloads using React state management.</p>
+      </div>
+    </div>
+
+    <!-- PROBLEM -->
+    <div class="problem" id="section-problem">
+      <div class="section-label">// The Problem</div>
+      <h2>Why Students Waste Hours Every Week</h2>
+      <p style="color:rgba(255,255,255,.5);font-size:.95rem">Before UniPortal, academic information was scattered across multiple disconnected systems.</p>
+      <div class="problem-grid">
+        <ul class="issue-list">
+          <li class="issue-item">
+            <div class="issue-icon">🌐</div>
+            <div><h4>Information Overload & Dispersal</h4><p>Students manually check notice boards, faculty pages, department emails, and course portals — all separately.</p></div>
+          </li>
+          <li class="issue-item">
+            <div class="issue-icon">🗓️</div>
+            <div><h4>Static & Outdated Data</h4><p>Timetables and syllabus PDFs uploaded once, never updated when changes happen mid-semester.</p></div>
+          </li>
+          <li class="issue-item">
+            <div class="issue-icon">🔒</div>
+            <div><h4>No Role Differentiation</h4><p>Faculty needed separate admin access; students saw too much or too little. No unified access model existed.</p></div>
+          </li>
+        </ul>
+        <div class="solution-box">
+          <h3>Our Solution Architecture</h3>
+          <div class="sol-step"><div class="num">1</div><span>Faculty & Admin upload data via secure portal</span></div>
+          <div class="sol-step"><div class="num">2</div><span>Express.js REST API validates JWT and routes requests</span></div>
+          <div class="sol-step"><div class="num">3</div><span>MongoDB stores structured course, faculty & schedule data</span></div>
+          <div class="sol-step"><div class="num">4</div><span>React frontend fetches and renders updates in real time</span></div>
+          <div class="sol-step"><div class="num">5</div><span>Students see clean, filtered, role-specific dashboards</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STACK -->
+    <div class="stack">
+      <div class="section-label">// Technology Stack</div>
+      <h2>Full-Stack MERN Implementation</h2>
+      <div class="stack-grid">
+        <div class="stack-card"><div class="icon">⚛️</div><h4>React.js</h4><p>Responsive SPA with hooks & component architecture</p></div>
+        <div class="stack-card"><div class="icon">🟢</div><h4>Node.js</h4><p>Scalable runtime for the Express backend server</p></div>
+        <div class="stack-card"><div class="icon">🚂</div><h4>Express.js</h4><p>RESTful API layer with JWT middleware & routing</p></div>
+        <div class="stack-card"><div class="icon">🍃</div><h4>MongoDB</h4><p>Flexible non-relational document storage</p></div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="land-footer">
+      <span>© 2025 Automated University Resource Portal — Nikhil Soni · 3rd Semester PBL</span>
+      <span>Manipal University Jaipur</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PAGE: AUTH
+══════════════════════════════════════════ -->
+<div id="page-auth" class="page">
+  <div class="auth-left">
+    <div>
+      <a href="#" class="logo" onclick="showLanding()" style="text-decoration:none"><div class="logo-dot"></div><span style="color:white;font-family:'Fraunces',serif;font-weight:700;font-size:1.3rem">UniPortal</span></a>
+    </div>
+    <div class="auth-left-content">
+      <h2>Your Academic Universe, Unified.</h2>
+      <p>Role-based access to every course, faculty contact, timetable, and announcement — always current, always secure.</p>
+      <div class="auth-feat"><div class="af-icon">🔐</div><div><h5>JWT Authentication</h5><p>Stateless tokens with role-claim validation on every API request</p></div></div>
+      <div class="auth-feat"><div class="af-icon">📊</div><div><h5>Real-Time Data</h5><p>React state updates reflect admin changes across all connected dashboards</p></div></div>
+      <div class="auth-feat"><div class="af-icon">🔍</div><div><h5>Advanced Search & Filter</h5><p>Complex multi-field queries with debounced React search component</p></div></div>
+    </div>
+    <div style="font-size:.75rem;color:rgba(255,255,255,.25)">Built with MERN Stack · 3rd Semester PBL · Nikhil Soni</div>
+  </div>
+  <div class="auth-right">
+    <div class="auth-box">
+      <h3>Welcome Back</h3>
+      <p class="sub">Sign in to access your university portal</p>
+
+      <div class="role-tabs">
+        <button class="role-tab active" data-role="student" onclick="selectRole('student',this)"><span class="rt-icon">🎓</span>Student</button>
+        <button class="role-tab" data-role="faculty" onclick="selectRole('faculty',this)"><span class="rt-icon">👨‍🏫</span>Faculty</button>
+        <button class="role-tab" data-role="admin" onclick="selectRole('admin',this)"><span class="rt-icon">🛡️</span>Admin</button>
+      </div>
+
+      <div class="credentials-hint">
+        <p id="cred-hint">Use any email · Password: <strong>student123</strong></p>
+      </div>
+
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="auth-email" placeholder="your@muj.ac.in" value="rahul.sharma@muj.ac.in"/>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="auth-password" placeholder="••••••••" value="student123"/>
+      </div>
+      <div class="auth-error" id="auth-error">Invalid credentials. Please try again.</div>
+      <button class="btn btn-indigo btn-full" onclick="doLogin()">Sign In →</button>
+      <div class="auth-back">← <a href="#" onclick="showLanding()">Back to Home</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PAGE: DASHBOARD
+══════════════════════════════════════════ -->
+<div id="page-dashboard" class="page">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-header">
+      <div class="logo-dot" style="flex-shrink:0"></div>
+      <span class="sb-logo">UniPortal</span>
+      <span class="sb-user-role" id="sb-role-badge">Student</span>
+    </div>
+    <nav class="sb-nav" id="sb-nav">
+      <!-- filled by JS -->
+    </nav>
+    <div class="sb-footer">
+      <div class="sb-user-card">
+        <div class="sb-avatar" id="sb-avatar">R</div>
+        <div class="sb-user-info">
+          <div class="name" id="sb-name">Rahul Sharma</div>
+          <div class="email" id="sb-email">rahul@muj.ac.in</div>
+        </div>
+        <button class="sb-logout" onclick="doLogout()" title="Sign Out">⏻</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main-area">
+    <div class="top-bar">
+      <h2 id="topbar-title">Dashboard</h2>
+      <div class="top-bar-right">
+        <div class="search-bar">
+          <span style="color:var(--muted)">🔍</span>
+          <input type="text" id="global-search" placeholder="Search courses, faculty…" oninput="handleSearch(this.value)"/>
+        </div>
+        <div class="notif-btn" onclick="showNotifications()"><span>🔔</span><span class="notif-dot"></span></div>
+      </div>
+    </div>
+
+    <div class="content-area">
+
+      <!-- ── STUDENT PANELS ── -->
+      <div id="panel-s-home" class="panel active">
+        <div class="stats-row">
+          <div class="stat-card"><div class="sc-label">Enrolled Courses</div><div class="sc-val">6</div><div class="sc-sub">This semester</div><div class="sc-icon">📚</div></div>
+          <div class="stat-card"><div class="sc-label">Attendance</div><div class="sc-val">84%</div><div class="sc-sub">Above minimum (75%)</div><div class="sc-icon">✅</div></div>
+          <div class="stat-card"><div class="sc-label">Assignments Due</div><div class="sc-val">3</div><div class="sc-sub">Next 7 days</div><div class="sc-icon">📝</div></div>
+          <div class="stat-card"><div class="sc-label">SGPA</div><div class="sc-val">8.4</div><div class="sc-sub">Semester 3</div><div class="sc-icon">⭐</div></div>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><h3>📢 Latest Announcements</h3><span class="badge badge-amber">3 New</span></div>
+            <div class="card-body">
+              <div class="ann-item"><div class="ann-dot" style="background:var(--danger)"></div><div class="ann-content"><h5>Mid-Sem Exams: Schedule Released</h5><p>Mid-semester exams begin October 28. Check the timetable section for slot details.</p><div class="ann-meta">📅 Oct 18, 2025 · Admin</div></div></div>
+              <div class="ann-item"><div class="ann-dot" style="background:var(--amber)"></div><div class="ann-content"><h5>CS301 Assignment 2 Extended</h5><p>Dr. Mehta has extended the DBMS assignment deadline to Oct 25, 2025.</p><div class="ann-meta">📅 Oct 17, 2025 · Dr. Mehta</div></div></div>
+              <div class="ann-item"><div class="ann-dot" style="background:var(--info)"></div><div class="ann-content"><h5>Library System Maintenance</h5><p>Digital library will be unavailable Oct 20, 10am–2pm for upgrades.</p><div class="ann-meta">📅 Oct 16, 2025 · Admin</div></div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>📊 Attendance Overview</h3><button class="btn btn-sm btn-outline" onclick="switchPanel('s-attendance')">View All</button></div>
+            <div class="card-body">
+              <div id="att-list"></div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:1.5rem" class="card">
+          <div class="card-header"><h3>🗓️ Today's Classes</h3><span id="today-date" class="badge badge-slate"></span></div>
+          <div class="card-body"><div id="today-classes"></div></div>
+        </div>
+      </div>
+
+      <div id="panel-s-courses" class="panel">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+          <div><h3 style="font-family:'Fraunces',serif;font-size:1.3rem;color:var(--indigo)">My Courses</h3><p style="font-size:.85rem;color:var(--muted)">Semester 3 — enrolled subjects</p></div>
+        </div>
+        <div class="filter-row" id="course-filters">
+          <div class="filter-chip active" onclick="filterCourses('all',this)">All (6)</div>
+          <div class="filter-chip" onclick="filterCourses('core',this)">Core</div>
+          <div class="filter-chip" onclick="filterCourses('lab',this)">Lab</div>
+          <div class="filter-chip" onclick="filterCourses('elective',this)">Elective</div>
+        </div>
+        <div class="grid-3" id="courses-grid"></div>
+      </div>
+
+      <div id="panel-s-timetable" class="panel">
+        <div style="margin-bottom:1.25rem"><h3 style="font-family:'Fraunces',serif;font-size:1.3rem;color:var(--indigo)">Weekly Timetable</h3><p style="font-size:.85rem;color:var(--muted)">B.Tech CSE — Semester 3, Section A</p></div>
+        <div class="card"><div class="card-body" style="padding:0;overflow-x:auto"><div id="timetable-wrap"></div></div></div>
+      </div>
+
+      <div id="panel-s-faculty" class="panel">
+        <div style="margin-bottom:1.25rem"><h3 style="font-family:'Fraunces',serif;font-size:1.3rem;color:var(--indigo)">Faculty Directory</h3><p style="font-size:.85rem;color:var(--muted)">Department of Computer Science & Engineering</p></div>
+        <div class="filter-row" id="faculty-filters">
+          <div class="filter-chip active" onclick="filterFaculty('all',this)">All Faculty</div>
+          <div class="filter-chip" onclick="filterFaculty('core',this)">Core CS</div>
+          <div class="filter-chip" onclick="filterFaculty('math',this)">Mathematics</div>
+        </div>
+        <div class="faculty-grid" id="faculty-grid"></div>
+      </div>
+
+      <div id="panel-s-notices" class="panel">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+          <div><h3 style="font-family:'Fraunces',serif;font-size:1.3rem;color:var(--indigo)">Notice Board</h3><p style="font-size:.85rem;color:var(--muted)">Official announcements and circulars</p></div>
+        </div>
+        <div class="filter-row">
+          <div class="filter-chip active" onclick="filterNotices('all',this)">All</div>
+          <div class="filter-chip" onclick="filterNotices('urgent',this)">🔴 Urgent</div>
+          <div class="filter-chip" onclick="filterNotices('exam',this)">📝 Exams</div>
+          <div class="filter-chip" onclick="filterNotices('event',this)">🎉 Events</div>
+        </div>
+        <div id="notices-list"></div>
+      </div>
+
+      <div id="panel-s-attendance" class="panel">
+        <div style="margin-bottom:1.25rem"><h3 style="font-family:'Fraunces',serif;font-size:1.3rem;color:var(--indigo)">Attendance Report</h3><p style="font-size:.85rem;color:var(--muted)">Subject-wise attendance for Semester 3</p></div>
+        <div class="card"><div class="card-body" style="padding:0">
+          <table class="data-table" id="att-table">
+            <thead><tr><th>Course</th><th>Code</th><th>Total Classes</th><th>Attended</th><th>%</th><th>Status</th></tr></thead>
+            <tbody id="att-table-body"></tbody>
+          </table>
+        </div></div>
+      </div>
+
+      <!-- ── FACULTY PANELS ── -->
+      <div id="panel-f-home" class="panel">
+        <div class="stats-row">
+          <div class="stat-card"><div class="sc-label">Courses Assigned</div><div class="sc-val">4</div><div class="sc-sub">This semester</div><div class="sc-icon">📚</div></div>
+          <div class="stat-card"><div class="sc-label">Total Students</div><div class="sc-val">128</div><div class="sc-sub">Across all sections</div><div class="sc-icon">👥</div></div>
+          <div class="stat-card"><div class="sc-label">Pending Reviews</div><div class="sc-val">12</div><div class="sc-sub">Assignments to grade</div><div class="sc-icon">📝</div></div>
+          <div class="stat-card"><div class="sc-label">Avg. Attendance</div><div class="sc-val">79%</div><div class="sc-sub">All courses</div><div class="sc-icon">📊</div></div>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><h3>📋 My Courses</h3></div>
+            <div class="card-body"><div id="fac-course-list"></div></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>🗓️ Upcoming Classes</h3></div>
+            <div class="card-body"><div id="fac-upcoming"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="panel-f-post" class="panel">
+        <div class="form-panel">
+          <h3>📢 Post Announcement</h3>
+          <p class="fp-sub">Broadcast a message to students enrolled in your courses.</p>
+          <div class="form-row">
+            <div class="form-group-d">
+              <label>Target Course</label>
+              <select id="post-course">
+                <option>CS301 — Database Management Systems</option>
+                <option>CS302 — Operating Systems</option>
+                <option>CS303 — Computer Networks</option>
+                <option>All My Courses</option>
+              </select>
+            </div>
+            <div class="form-group-d">
+              <label>Priority</label>
+              <select id="post-priority"><option>Normal</option><option>Important</option><option>Urgent</option></select>
+            </div>
+          </div>
+          <div class="form-group-d">
+            <label>Title</label>
+            <input type="text" id="post-title" placeholder="e.g. Assignment 2 Deadline Extended"/>
+          </div>
+          <div class="form-group-d">
+            <label>Message</label>
+            <textarea id="post-body" rows="4" placeholder="Write your announcement here…"></textarea>
+          </div>
+          <button class="btn btn-indigo" onclick="postAnnouncement()">Post Announcement</button>
+        </div>
+        <div style="margin-top:1.5rem" class="card">
+          <div class="card-header"><h3>My Recent Posts</h3></div>
+          <div class="card-body" id="fac-posts-list">
+            <div class="notice-item info"><div class="notice-top"><span class="notice-title">CS301 Assignment 2 Extended</span><span class="badge badge-blue">Normal</span></div><p class="notice-body">Deadline extended to Oct 25, 2025 due to mid-sem clash.</p><div class="notice-meta">📅 Oct 17, 2025 · CS301</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="panel-f-attendance" class="panel">
+        <div class="card" style="margin-bottom:1.5rem">
+          <div class="card-header"><h3>📝 Mark Attendance</h3></div>
+          <div class="card-body">
+            <div class="form-row" style="margin-bottom:1rem">
+              <div class="form-group-d"><label>Course</label><select id="att-course"><option>CS301 — DBMS</option><option>CS302 — OS</option></select></div>
+              <div class="form-group-d"><label>Date</label><input type="date" id="att-date"/></div>
+            </div>
+            <table class="data-table">
+              <thead><tr><th>Reg No.</th><th>Name</th><th>Present</th></tr></thead>
+              <tbody id="att-mark-body"></tbody>
+            </table>
+            <button class="btn btn-success" style="margin-top:1rem" onclick="saveAttendance()">Save Attendance</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="panel-f-grades" class="panel">
+        <div class="card">
+          <div class="card-header"><h3>📊 Grade Book</h3><select style="font-size:.82rem;padding:.3rem .6rem;border:1px solid var(--border);border-radius:6px"><option>CS301 — DBMS</option><option>CS302 — OS</option></select></div>
+          <div class="card-body" style="padding:0">
+            <table class="data-table" id="grade-table">
+              <thead><tr><th>Reg No.</th><th>Name</th><th>Mid-Sem (30)</th><th>Assignments (20)</th><th>End-Sem (50)</th><th>Total</th><th>Grade</th></tr></thead>
+              <tbody id="grade-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── ADMIN PANELS ── -->
+      <div id="panel-a-home" class="panel">
+        <div class="stats-row">
+          <div class="stat-card"><div class="sc-label">Total Students</div><div class="sc-val">847</div><div class="sc-sub">Active this semester</div><div class="sc-icon">🎓</div></div>
+          <div class="stat-card"><div class="sc-label">Faculty Members</div><div class="sc-val">36</div><div class="sc-sub">Across departments</div><div class="sc-icon">👨‍🏫</div></div>
+          <div class="stat-card"><div class="sc-label">Active Courses</div><div class="sc-val">52</div><div class="sc-sub">This semester</div><div class="sc-icon">📚</div></div>
+          <div class="stat-card"><div class="sc-label">Pending Requests</div><div class="sc-val">7</div><div class="sc-sub">Needs action</div><div class="sc-icon">⚠️</div></div>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><h3>📈 Recent Activity</h3></div>
+            <div class="card-body" id="admin-activity"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>🚦 System Status</h3></div>
+            <div class="card-body" id="admin-status"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="panel-a-courses" class="panel">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+          <h3 style="font-family:'Fraunces',serif;font-size:1.3rem;color:var(--indigo)">Course Management</h3>
+          <button class="btn btn-indigo btn-sm" onclick="showAddCourse()">+ Add Course</button>
+        </div>
+        <div class="card"><div class="card-body" style="padding:0">
+          <table class="data-table">
+            <thead><tr><th>Code</th><th>Name</th><th>Faculty</th><th>Credits</th><th>Students</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="admin-course-body"></tbody>
+          </table>
+        </div></div>
+      </div>
+
+      <div id="panel-a-users" class="panel">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+          <h3 style="font-family:'Fraunces',serif;font-size:1.3rem;color:var(--indigo)">User Management</h3>
+          <button class="btn btn-indigo btn-sm" onclick="showToast('Feature coming soon!','warning')">+ Add User</button>
+        </div>
+        <div class="filter-row">
+          <div class="filter-chip active" onclick="filterUsers('all',this)">All Users</div>
+          <div class="filter-chip" onclick="filterUsers('student',this)">Students</div>
+          <div class="filter-chip" onclick="filterUsers('faculty',this)">Faculty</div>
+          <div class="filter-chip" onclick="filterUsers('admin',this)">Admins</div>
+        </div>
+        <div class="card"><div class="card-body" style="padding:0">
+          <table class="data-table">
+            <thead><tr><th>Name</th><th>Reg / EmpID</th><th>Role</th><th>Email</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="admin-user-body"></tbody>
+          </table>
+        </div></div>
+      </div>
+
+      <div id="panel-a-notices" class="panel">
+        <div class="form-panel" style="margin-bottom:1.5rem">
+          <h3>📋 Post Official Notice</h3>
+          <p class="fp-sub">Publish notices visible to all students and faculty university-wide.</p>
+          <div class="form-row">
+            <div class="form-group-d"><label>Category</label><select id="notice-cat"><option>Exam</option><option>Event</option><option>Urgent</option><option>General</option></select></div>
+            <div class="form-group-d"><label>Target Audience</label><select><option>All Students</option><option>Faculty Only</option><option>Everyone</option></select></div>
+          </div>
+          <div class="form-group-d"><label>Notice Title</label><input type="text" id="notice-title" placeholder="e.g. Mid-Semester Exam Timetable"/></div>
+          <div class="form-group-d"><label>Notice Content</label><textarea id="notice-body" rows="3" placeholder="Full notice text…"></textarea></div>
+          <button class="btn btn-indigo" onclick="postNotice()">Publish Notice</button>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>Published Notices</h3></div>
+          <div class="card-body" id="admin-notices-list"><div id="notices-list-admin"></div></div>
+        </div>
+      </div>
+
+    </div><!-- /content-area -->
+  </div><!-- /main-area -->
+</div><!-- /page-dashboard -->
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════════
+const USERS = {
+  student: { name:'Rahul Sharma', email:'rahul.sharma@muj.ac.in', role:'student', regNo:'2021CSE001', pass:'student123' },
+  faculty:  { name:'Dr. Priya Mehta', email:'priya.mehta@muj.ac.in', role:'faculty', empId:'F0041', pass:'faculty123' },
+  admin:    { name:'Dr. A. Kumar', email:'admin@muj.ac.in', role:'admin', empId:'ADM001', pass:'admin123' },
+};
+
+const COURSES = [
+  { code:'CS301', name:'Database Management Systems', faculty:'Dr. Priya Mehta', credits:4, students:62, type:'core', color:'#3d44b5', status:'Active', desc:'Relational models, SQL, normalization, transactions.' },
+  { code:'CS302', name:'Operating Systems', faculty:'Dr. Ramesh Kumar', credits:4, students:62, type:'core', color:'#10b981', status:'Active', desc:'Process management, memory, file systems, scheduling.' },
+  { code:'CS303', name:'Computer Networks', faculty:'Prof. Anjali Singh', credits:3, students:60, type:'core', color:'#f59e0b', status:'Active', desc:'OSI model, TCP/IP, routing protocols, socket programming.' },
+  { code:'CS304', name:'Data Structures Lab', faculty:'Dr. Priya Mehta', credits:2, students:62, type:'lab', color:'#ef4444', status:'Active', desc:'Practical implementation of trees, graphs, sorting algorithms.' },
+  { code:'MA301', name:'Discrete Mathematics', faculty:'Prof. V. Sharma', credits:4, students:62, type:'math', color:'#8b5cf6', status:'Active', desc:'Sets, relations, logic, graph theory, combinatorics.' },
+  { code:'HS301', name:'Technical Communication', faculty:'Ms. R. Patel', credits:2, students:58, type:'elective', color:'#64748b', status:'Active', desc:'Professional writing, presentations, soft skills.' },
+];
+
+const FACULTY_LIST = [
+  { name:'Dr. Priya Mehta', dept:'Database & Software Engg', initial:'PM', color:'#3d44b5', tags:['DBMS','SQL','Big Data'], type:'core' },
+  { name:'Dr. Ramesh Kumar', dept:'Systems & Architecture', initial:'RK', color:'#10b981', tags:['OS','Linux','Cloud'], type:'core' },
+  { name:'Prof. Anjali Singh', dept:'Networks & Security', initial:'AS', color:'#f59e0b', tags:['Networks','Cybersecurity','IoT'], type:'core' },
+  { name:'Prof. V. Sharma', dept:'Mathematics', initial:'VS', color:'#8b5cf6', tags:['Discrete Maths','Graph Theory'], type:'math' },
+  { name:'Ms. R. Patel', dept:'Humanities & Comm.', initial:'RP', color:'#64748b', tags:['Communication','Research'], type:'core' },
+  { name:'Dr. A. Joshi', dept:'AI & Machine Learning', initial:'AJ', color:'#ec4899', tags:['ML','Python','Deep Learning'], type:'core' },
+];
+
+const NOTICES = [
+  { title:'Mid-Semester Exam Schedule Released', body:'Mid-semester examinations will commence from October 28, 2025. Hall tickets available in Student Services portal. Refer to official timetable.', date:'Oct 18, 2025', type:'exam', tag:'Exam', urgent:true },
+  { title:'Annual Technical Fest — TechFusion 2025', body:'Register for TechFusion before Oct 22. Events include hackathon, paper presentation, robotics, and cultural night.', date:'Oct 16, 2025', type:'event', tag:'Event', urgent:false },
+  { title:'Library System Maintenance', body:'Digital library access will be suspended on Oct 20 from 10:00 AM to 2:00 PM for system upgrades. Plan accordingly.', date:'Oct 15, 2025', type:'info', tag:'Info', urgent:false },
+  { title:'Scholarship Applications Open — Merit 2025–26', body:'Applications for merit-based scholarships for 2025–26 are now open. Submit before Nov 5 via the finance portal.', date:'Oct 14, 2025', type:'event', tag:'Finance', urgent:false },
+  { title:'Campus WiFi Upgrade — Brief Outage Oct 21', body:'Campus-wide WiFi will undergo an infrastructure upgrade on Oct 21, 2 AM–5 AM. Minimal disruption expected.', date:'Oct 13, 2025', type:'info', tag:'IT', urgent:false },
+];
+
+const ATTENDANCE = [
+  { code:'CS301', name:'DBMS', attended:38, total:42 },
+  { code:'CS302', name:'Operating Systems', attended:35, total:44 },
+  { code:'CS303', name:'Computer Networks', attended:30, total:40 },
+  { code:'CS304', name:'DS Lab', attended:14, total:16 },
+  { code:'MA301', name:'Discrete Maths', attended:36, total:44 },
+  { code:'HS301', name:'Tech Communication', attended:18, total:20 },
+];
+
+const TIMETABLE = [
+  // [Mon, Tue, Wed, Thu, Fri, Sat]
+  { time:'8:00–9:00',    slots:[{sub:'CS302',room:'R201',type:'filled'},{sub:'',type:'free'},{sub:'CS301',room:'R102',type:'filled'},{sub:'',type:'free'},{sub:'MA301',room:'R305',type:'filled'},{sub:'',type:'free'}]},
+  { time:'9:00–10:00',   slots:[{sub:'MA301',room:'R305',type:'filled'},{sub:'CS303',room:'R204',type:'filled'},{sub:'',type:'free'},{sub:'CS302',room:'R201',type:'filled'},{sub:'',type:'free'},{sub:'',type:'free'}]},
+  { time:'10:00–11:00',  slots:[{sub:'',type:'free'},{sub:'CS301',room:'R102',type:'filled'},{sub:'CS303',room:'R204',type:'filled'},{sub:'',type:'free'},{sub:'CS302',room:'R201',type:'filled'},{sub:'',type:'free'}]},
+  { time:'11:00–12:00',  slots:[{sub:'CS301',room:'R102',type:'filled'},{sub:'',type:'free'},{sub:'MA301',room:'R305',type:'filled'},{sub:'CS303',room:'R204',type:'filled'},{sub:'',type:'free'},{sub:'CS304 Lab',room:'L101',type:'lab'}]},
+  { time:'12:00–1:00',   slots:[{sub:'',type:'free'},{sub:'',type:'free'},{sub:'HS301',room:'R408',type:'filled'},{sub:'',type:'free'},{sub:'CS303',room:'R204',type:'filled'},{sub:'CS304 Lab',room:'L101',type:'lab'}]},
+  { time:'2:00–3:00',    slots:[{sub:'CS303',room:'R204',type:'filled'},{sub:'MA301',room:'R305',type:'filled'},{sub:'',type:'free'},{sub:'HS301',room:'R408',type:'filled'},{sub:'',type:'free'},{sub:'',type:'free'}]},
+  { time:'3:00–4:00',    slots:[{sub:'HS301',room:'R408',type:'filled'},{sub:'',type:'free'},{sub:'CS302',room:'R201',type:'filled'},{sub:'',type:'free'},{sub:'CS301',room:'R102',type:'filled'},{sub:'',type:'free'}]},
+];
+
+const STU_LIST = [
+  {reg:'2021CSE001',name:'Rahul Sharma',present:true},{reg:'2021CSE002',name:'Priya Patel',present:true},
+  {reg:'2021CSE003',name:'Amit Kumar',present:false},{reg:'2021CSE004',name:'Sneha Gupta',present:true},
+  {reg:'2021CSE005',name:'Arjun Singh',present:true},{reg:'2021CSE006',name:'Pooja Yadav',present:false},
+];
+
+const GRADES = [
+  {reg:'2021CSE001',name:'Rahul Sharma',mid:24,assign:17,end:41},{reg:'2021CSE002',name:'Priya Patel',mid:27,assign:19,end:44},
+  {reg:'2021CSE003',name:'Amit Kumar',mid:18,assign:14,end:35},{reg:'2021CSE004',name:'Sneha Gupta',mid:28,assign:18,end:46},
+  {reg:'2021CSE005',name:'Arjun Singh',mid:22,assign:16,end:38},{reg:'2021CSE006',name:'Pooja Yadav',mid:26,assign:17,end:42},
+];
+
+// ═══════════════════════════════════════════════════════════
+// APP STATE
+// ═══════════════════════════════════════════════════════════
+let currentUser = null;
+let currentRole = 'student';
+let dynamicNotices = [...NOTICES];
+
+// ═══════════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════════
+function showLanding(){setPage('page-landing')}
+function showAuth(){setPage('page-auth')}
+function setPage(id){
+  document.querySelectorAll('.page').forEach(p=>{p.classList.remove('active');p.style.display='none'});
+  const el=document.getElementById(id);
+  el.style.display=id==='page-dashboard'?'flex':'block';
+  el.classList.add('active');
+  document.body.classList.toggle('modal-open',false);
+}
+
+function quickLogin(role){
+  currentRole=role;
+  document.querySelectorAll('.role-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelector(`[data-role="${role}"]`).classList.add('active');
+  updateCredHint(role);
+  setPage('page-auth');
+  autoFillCreds(role);
+}
+
+function selectRole(role, el){
+  currentRole=role;
+  document.querySelectorAll('.role-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  updateCredHint(role);
+  autoFillCreds(role);
+}
+
+function autoFillCreds(role){
+  const u=USERS[role];
+  document.getElementById('auth-email').value=u.email;
+  document.getElementById('auth-password').value=u.pass;
+}
+
+function updateCredHint(role){
+  const hints={student:'Use any email · Password: <strong>student123</strong>',faculty:'Use any email · Password: <strong>faculty123</strong>',admin:'Use any email · Password: <strong>admin123</strong>'};
+  document.getElementById('cred-hint').innerHTML=hints[role];
+}
+
+function doLogin(){
+  const email=document.getElementById('auth-email').value;
+  const pass=document.getElementById('auth-password').value;
+  const u=USERS[currentRole];
+  const errEl=document.getElementById('auth-error');
+  if(!email||!pass){errEl.style.display='block';errEl.textContent='Please fill in all fields.';return}
+  if(pass!==u.pass){errEl.style.display='block';errEl.textContent='Incorrect password. Try: '+u.pass;return}
+  errEl.style.display='none';
+  currentUser={...u};
+  loadDashboard();
+}
+
+function doLogout(){
+  currentUser=null;
+  showLanding();
+  showToast('Signed out successfully.','success');
+}
+
+// ═══════════════════════════════════════════════════════════
+// DASHBOARD SETUP
+// ═══════════════════════════════════════════════════════════
+const NAV_CONFIG = {
+  student:[
+    {id:'s-home',icon:'🏠',label:'Dashboard'},
+    {id:'s-courses',icon:'📚',label:'My Courses'},
+    {id:'s-timetable',icon:'🗓️',label:'Timetable'},
+    {id:'s-faculty',icon:'👨‍🏫',label:'Faculty'},
+    {id:'s-notices',icon:'📢',label:'Notice Board',badge:'3'},
+    {id:'s-attendance',icon:'✅',label:'Attendance'},
+  ],
+  faculty:[
+    {id:'f-home',icon:'🏠',label:'Dashboard'},
+    {id:'f-post',icon:'📢',label:'Post Announcement'},
+    {id:'f-attendance',icon:'✅',label:'Mark Attendance'},
+    {id:'f-grades',icon:'📊',label:'Grade Book'},
+  ],
+  admin:[
+    {id:'a-home',icon:'🏠',label:'Dashboard'},
+    {id:'a-courses',icon:'📚',label:'Courses'},
+    {id:'a-users',icon:'👥',label:'User Management'},
+    {id:'a-notices',icon:'📋',label:'Notice Board'},
+  ],
+};
+
+function loadDashboard(){
+  const u=currentUser;
+  const role=u.role;
+  // update sidebar
+  document.getElementById('sb-role-badge').textContent=role.charAt(0).toUpperCase()+role.slice(1);
+  document.getElementById('sb-avatar').textContent=u.name.charAt(0);
+  document.getElementById('sb-name').textContent=u.name;
+  document.getElementById('sb-email').textContent=u.email;
+  // build nav
+  const nav=document.getElementById('sb-nav');
+  nav.innerHTML='';
+  NAV_CONFIG[role].forEach(item=>{
+    const btn=document.createElement('button');
+    btn.className='sb-link'+(item.id.endsWith('home')?' active':'');
+    btn.setAttribute('data-panel','panel-'+item.id);
+    btn.innerHTML=`<span class="sb-icon">${item.icon}</span><span>${item.label}</span>${item.badge?`<span class="sb-badge">${item.badge}</span>`:''}`;
+    btn.onclick=()=>switchPanel(item.id);
+    nav.appendChild(btn);
+  });
+  // show dashboard and first panel
+  setPage('page-dashboard');
+  switchPanel(role[0]+'-home');
+  populateAll(role);
+  showToast(`Welcome back, ${u.name.split(' ')[0]}! 👋`,'success');
+}
+
+function switchPanel(id){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sb-link').forEach(b=>b.classList.remove('active'));
+  const panel=document.getElementById('panel-'+id);
+  if(panel) panel.classList.add('active');
+  const btn=document.querySelector(`[data-panel="panel-${id}"]`);
+  if(btn) btn.classList.add('active');
+  // update topbar title
+  const labels={
+    's-home':'Dashboard','s-courses':'My Courses','s-timetable':'Timetable',
+    's-faculty':'Faculty Directory','s-notices':'Notice Board','s-attendance':'Attendance Report',
+    'f-home':'Dashboard','f-post':'Post Announcement','f-attendance':'Mark Attendance','f-grades':'Grade Book',
+    'a-home':'Dashboard','a-courses':'Course Management','a-users':'User Management','a-notices':'Notices'
+  };
+  document.getElementById('topbar-title').textContent=labels[id]||'Dashboard';
+}
+
+// ═══════════════════════════════════════════════════════════
+// POPULATE DATA
+// ═══════════════════════════════════════════════════════════
+function populateAll(role){
+  if(role==='student'){populateStudentDash()}
+  else if(role==='faculty'){populateFacultyDash()}
+  else{populateAdminDash()}
+}
+
+function populateStudentDash(){
+  populateAttendanceWidget();
+  populateTodayClasses();
+  populateCourses('all');
+  populateTimetable();
+  populateFaculty('all');
+  populateNotices(dynamicNotices);
+  populateAttendanceTable();
+  document.getElementById('today-date').textContent = new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+}
+
+function populateAttendanceWidget(){
+  const el=document.getElementById('att-list');
+  el.innerHTML=ATTENDANCE.map(a=>{
+    const pct=Math.round(a.attended/a.total*100);
+    const color=pct>=75?'var(--success)':pct>=65?'var(--amber)':'var(--danger)';
+    return `<div style="margin-bottom:.85rem">
+      <div style="display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:.3rem">
+        <span style="font-weight:600">${a.name}</span>
+        <span style="font-weight:700;color:${color}">${pct}%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${color}"></div></div>
+    </div>`;
+  }).join('');
+}
+
+function populateTodayClasses(){
+  const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const day=new Date().getDay();
+  const dayIdx=day===0||day===6?1:day-1; // default to Mon if weekend
+  const classes=[];
+  TIMETABLE.forEach(row=>{
+    const slot=row.slots[dayIdx];
+    if(slot&&slot.sub) classes.push({time:row.time,...slot});
+  });
+  const el=document.getElementById('today-classes');
+  if(!classes.length){el.innerHTML='<div class="empty-state"><div class="es-icon">🎉</div><h4>No classes today!</h4></div>';return}
+  el.innerHTML=`<table class="data-table"><thead><tr><th>Time</th><th>Subject</th><th>Room</th><th>Type</th></tr></thead><tbody>
+    ${classes.map(c=>`<tr><td><span style="font-family:'JetBrains Mono',monospace;font-size:.8rem">${c.time}</span></td><td>${c.sub}</td><td>${c.room||'—'}</td><td>${c.type==='lab'?'<span class="badge badge-amber">Lab</span>':'<span class="badge badge-blue">Lecture</span>'}</td></tr>`).join('')}
+  </tbody></table>`;
+}
+
+function populateCourses(filter){
+  const filtered=filter==='all'?COURSES:COURSES.filter(c=>c.type===filter);
+  const grid=document.getElementById('courses-grid');
+  if(!filtered.length){grid.innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="es-icon">📚</div><h4>No courses found</h4></div>';return}
+  grid.innerHTML=filtered.map(c=>`
+    <div class="course-card" onclick="showCourseDetail('${c.code}')">
+      <div class="course-card-top" style="background:${c.color}"></div>
+      <div class="course-card-body">
+        <div class="cc-code">${c.code}</div>
+        <h4>${c.name}</h4>
+        <p style="font-size:.8rem;color:var(--muted);line-height:1.5">${c.desc}</p>
+        <div class="course-meta">
+          <span class="badge badge-blue">${c.credits} Credits</span>
+          <span class="badge badge-slate">${c.type}</span>
+        </div>
+      </div>
+      <div class="course-footer"><span>👤 ${c.faculty}</span><span>👥 ${c.students} students</span></div>
+    </div>
+  `).join('');
+}
+
+function filterCourses(f,el){
+  document.querySelectorAll('#course-filters .filter-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  populateCourses(f);
+}
+
+function showCourseDetail(code){
+  const c=COURSES.find(x=>x.code===code);
+  if(!c)return;
+  openModal(c.name,`
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.25rem">
+      <span class="badge badge-blue">${c.code}</span>
+      <span class="badge badge-slate">${c.credits} Credits</span>
+      <span class="badge badge-green">${c.status}</span>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted);line-height:1.7;margin-bottom:1.25rem">${c.desc}</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;font-size:.85rem">
+      <div><div style="color:var(--muted);font-size:.75rem;font-weight:600;margin-bottom:.25rem">FACULTY</div><div style="font-weight:600">${c.faculty}</div></div>
+      <div><div style="color:var(--muted);font-size:.75rem;font-weight:600;margin-bottom:.25rem">ENROLLED</div><div style="font-weight:600">${c.students} students</div></div>
+      <div><div style="color:var(--muted);font-size:.75rem;font-weight:600;margin-bottom:.25rem">TYPE</div><div style="font-weight:600;text-transform:capitalize">${c.type}</div></div>
+      <div><div style="color:var(--muted);font-size:.75rem;font-weight:600;margin-bottom:.25rem">DEPARTMENT</div><div style="font-weight:600">Computer Science</div></div>
+    </div>
+    <div style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border)">
+      <div style="font-size:.8rem;font-weight:600;color:var(--muted);margin-bottom:.5rem">YOUR ATTENDANCE</div>
+      ${(()=>{const a=ATTENDANCE.find(x=>x.code===code);if(!a)return'—';const p=Math.round(a.attended/a.total*100);return`<div style="font-size:1.5rem;font-weight:700;font-family:'Fraunces',serif;color:${p>=75?'var(--success)':'var(--danger)'}">${p}%</div><div style="font-size:.78rem;color:var(--muted)">${a.attended}/${a.total} classes attended</div><div class="progress-bar" style="margin-top:.6rem"><div class="progress-fill" style="width:${p}%;background:${p>=75?'var(--success)':'var(--danger)'}"></div></div>`;})()}
+    </div>
+  `);
+}
+
+function populateTimetable(){
+  const days=['Mon','Tue','Wed','Thu','Fri','Sat'];
+  let html=`<div class="timetable"><div class="tt-header"><div>Time</div>${days.map(d=>`<div>${d}</div>`).join('')}</div>`;
+  TIMETABLE.forEach(row=>{
+    html+=`<div class="tt-row"><div class="tt-time tt-cell">${row.time}</div>`;
+    row.slots.forEach(s=>{
+      if(s.sub) html+=`<div class="tt-slot ${s.type}"><div class="tt-subj">${s.sub}</div>${s.room?`<div class="tt-room">${s.room}</div>`:''}</div>`;
+      else html+=`<div class="tt-slot free">—</div>`;
+    });
+    html+=`</div>`;
+  });
+  html+=`</div>`;
+  document.getElementById('timetable-wrap').innerHTML=html;
+}
+
+function populateFaculty(filter){
+  const filtered=filter==='all'?FACULTY_LIST:FACULTY_LIST.filter(f=>f.type===filter);
+  const grid=document.getElementById('faculty-grid');
+  grid.innerHTML=filtered.map(f=>`
+    <div class="fac-card" onclick="showFacultyDetail('${f.name}')">
+      <div class="fac-avatar" style="background:${f.color}">${f.initial}</div>
+      <div class="fac-name">${f.name}</div>
+      <div class="fac-dept">${f.dept}</div>
+      <div class="fac-tags">${f.tags.map(t=>`<span class="fac-tag">${t}</span>`).join('')}</div>
+    </div>
+  `).join('');
+}
+
+function filterFaculty(f,el){
+  document.querySelectorAll('#faculty-filters .filter-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  populateFaculty(f);
+}
+
+function showFacultyDetail(name){
+  const f=FACULTY_LIST.find(x=>x.name===name);
+  if(!f)return;
+  openModal(f.name,`
+    <div style="text-align:center;margin-bottom:1.5rem">
+      <div style="width:72px;height:72px;border-radius:50%;background:${f.color};display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:700;color:white;margin:0 auto .75rem">${f.initial}</div>
+      <div style="font-size:.9rem;color:var(--muted)">${f.dept}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;font-size:.85rem;margin-bottom:1.25rem">
+      <div><div style="color:var(--muted);font-size:.75rem;font-weight:600;margin-bottom:.25rem">DEPARTMENT</div><div style="font-weight:600">${f.dept}</div></div>
+      <div><div style="color:var(--muted);font-size:.75rem;font-weight:600;margin-bottom:.25rem">EMAIL</div><div style="font-weight:600;font-size:.8rem">${f.name.split(' ').pop().toLowerCase()}@muj.ac.in</div></div>
+    </div>
+    <div><div style="font-size:.75rem;font-weight:600;color:var(--muted);margin-bottom:.5rem">EXPERTISE</div><div style="display:flex;flex-wrap:wrap;gap:.35rem">${f.tags.map(t=>`<span class="badge badge-purple">${t}</span>`).join('')}</div></div>
+    <div style="margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid var(--border)">
+      <div style="font-size:.75rem;font-weight:600;color:var(--muted);margin-bottom:.5rem">COURSES THIS SEMESTER</div>
+      ${COURSES.filter(c=>c.faculty===name).map(c=>`<div style="font-size:.85rem;padding:.4rem 0;border-bottom:1px solid var(--border)">${c.code} — ${c.name}</div>`).join('')||'<div style="font-size:.85rem;color:var(--muted)">No courses assigned</div>'}
+    </div>
+  `);
+}
+
+function populateNotices(list){
+  const el=document.getElementById('notices-list');
+  if(!el) return;
+  el.innerHTML=list.map(n=>`
+    <div class="notice-item ${n.urgent?'urgent':n.type}" onclick="showNoticeDetail(${JSON.stringify(n).replace(/"/g,'&quot;')})">
+      <div class="notice-top"><span class="notice-title">${n.title}</span><span class="badge ${n.urgent?'badge-red':n.type==='event'?'badge-green':'badge-blue'}">${n.tag}</span></div>
+      <p class="notice-body">${n.body}</p>
+      <div class="notice-meta">📅 ${n.date}</div>
+    </div>
+  `).join('');
+}
+
+function filterNotices(type,el){
+  document.querySelectorAll('.filter-row .filter-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  const filtered=type==='all'?dynamicNotices:dynamicNotices.filter(n=>n.type===type||n.tag.toLowerCase()===type);
+  populateNotices(filtered);
+}
+
+function showNoticeDetail(n){
+  openModal(n.title,`
+    <div style="margin-bottom:1rem;display:flex;gap:.5rem;flex-wrap:wrap">
+      <span class="badge ${n.urgent?'badge-red':n.type==='event'?'badge-green':'badge-blue'}">${n.tag}</span>
+      ${n.urgent?'<span class="badge badge-red">⚠️ Urgent</span>':''}
+    </div>
+    <p style="font-size:.9rem;line-height:1.75;color:var(--text);margin-bottom:1rem">${n.body}</p>
+    <div style="font-size:.8rem;color:var(--muted)">📅 Published: ${n.date}</div>
+  `);
+}
+
+function populateAttendanceTable(){
+  const tbody=document.getElementById('att-table-body');
+  tbody.innerHTML=ATTENDANCE.map(a=>{
+    const pct=Math.round(a.attended/a.total*100);
+    const status=pct>=75?'<span class="badge badge-green">✅ Safe</span>':pct>=65?'<span class="badge badge-amber">⚠️ Low</span>':'<span class="badge badge-red">🔴 Critical</span>';
+    return `<tr><td>${a.name}</td><td><span style="font-family:'JetBrains Mono',monospace;font-size:.78rem">${a.code}</span></td><td>${a.total}</td><td>${a.attended}</td><td><strong style="color:${pct>=75?'var(--success)':pct>=65?'var(--amber-dk)':'var(--danger)'}">${pct}%</strong></td><td>${status}</td></tr>`;
+  }).join('');
+}
+
+// ── FACULTY DASHBOARD ──
+function populateFacultyDash(){
+  const el=document.getElementById('fac-course-list');
+  el.innerHTML=COURSES.filter(c=>c.faculty===currentUser.name).map(c=>`
+    <div style="display:flex;align-items:center;gap:.75rem;padding:.75rem 0;border-bottom:1px solid var(--border)">
+      <div style="width:8px;height:36px;border-radius:4px;background:${c.color};flex-shrink:0"></div>
+      <div><div style="font-size:.88rem;font-weight:700;color:var(--indigo)">${c.name}</div><div style="font-size:.77rem;color:var(--muted)">${c.code} · ${c.students} students</div></div>
+      <span class="badge badge-blue" style="margin-left:auto">${c.credits}cr</span>
+    </div>
+  `).join('')||'<div class="empty-state"><div class="es-icon">📚</div><h4>No courses assigned</h4></div>';
+
+  const up=document.getElementById('fac-upcoming');
+  up.innerHTML=['Today 10:00 AM — CS301 DBMS (Room R102)','Today 2:00 PM — CS304 DS Lab (Lab L101)','Tomorrow 9:00 AM — CS302 OS (Room R201)'].map(s=>`<div style="padding:.65rem 0;border-bottom:1px solid var(--border);font-size:.85rem"><span class="badge badge-green" style="margin-right:.5rem">📅</span>${s}</div>`).join('');
+
+  // attendance marking
+  const tbody=document.getElementById('att-mark-body');
+  document.getElementById('att-date').value=new Date().toISOString().split('T')[0];
+  tbody.innerHTML=STU_LIST.map((s,i)=>`
+    <tr>
+      <td><span style="font-family:'JetBrains Mono',monospace;font-size:.78rem">${s.reg}</span></td>
+      <td>${s.name}</td>
+      <td><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer"><input type="checkbox" id="att_${i}" ${s.present?'checked':''}><span class="badge ${s.present?'badge-green':'badge-red'}" id="att_lbl_${i}">${s.present?'Present':'Absent'}</span></label></td>
+    </tr>
+  `).join('');
+  STU_LIST.forEach((_,i)=>{
+    const cb=document.getElementById('att_'+i);
+    cb.onchange=()=>{
+      document.getElementById('att_lbl_'+i).className='badge '+(cb.checked?'badge-green':'badge-red');
+      document.getElementById('att_lbl_'+i).textContent=cb.checked?'Present':'Absent';
+    };
+  });
+
+  // grade book
+  const gtbody=document.getElementById('grade-table-body');
+  function gradeLabel(total){if(total>=90)return'O';if(total>=80)return'A+';if(total>=70)return'A';if(total>=60)return'B+';if(total>=50)return'B';return'F';}
+  gtbody.innerHTML=GRADES.map(g=>{
+    const total=g.mid+g.assign+g.end;
+    return `<tr><td><span style="font-family:'JetBrains Mono',monospace;font-size:.78rem">${g.reg}</span></td><td>${g.name}</td><td><input type="number" value="${g.mid}" max="30" style="width:50px;padding:.2rem .4rem;border:1px solid var(--border);border-radius:4px;font-size:.82rem"/></td><td><input type="number" value="${g.assign}" max="20" style="width:50px;padding:.2rem .4rem;border:1px solid var(--border);border-radius:4px;font-size:.82rem"/></td><td><input type="number" value="${g.end}" max="50" style="width:50px;padding:.2rem .4rem;border:1px solid var(--border);border-radius:4px;font-size:.82rem"/></td><td><strong>${total}</strong>/100</td><td><span class="badge ${total>=60?'badge-green':'badge-red'}">${gradeLabel(total)}</span></td></tr>`;
+  }).join('');
+}
+
+// ── ADMIN DASHBOARD ──
+function populateAdminDash(){
+  // activity
+  document.getElementById('admin-activity').innerHTML=[
+    {icon:'📚',text:'CS401 — AI/ML added by Admin'},
+    {icon:'👤',text:'New faculty: Dr. R. Joshi registered'},
+    {icon:'📢',text:'Notice posted: Mid-Sem Schedule'},
+    {icon:'✅',text:'DBMS attendance uploaded by Dr. Mehta'},
+    {icon:'🔧',text:'User password reset: 2021CSE099'},
+  ].map(a=>`<div style="display:flex;gap:.75rem;padding:.6rem 0;border-bottom:1px solid var(--border);font-size:.83rem;align-items:center"><span>${a.icon}</span><span>${a.text}</span></div>`).join('');
+
+  document.getElementById('admin-status').innerHTML=[
+    {label:'API Server',status:'Operational',ok:true},
+    {label:'MongoDB Atlas',status:'Connected',ok:true},
+    {label:'Auth Service (JWT)',status:'Active',ok:true},
+    {label:'Email Service',status:'Degraded',ok:false},
+    {label:'File Storage',status:'Operational',ok:true},
+  ].map(s=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:.55rem 0;border-bottom:1px solid var(--border);font-size:.83rem"><span>${s.label}</span><span class="badge ${s.ok?'badge-green':'badge-amber'}">${s.ok?'●':' ●'} ${s.status}</span></div>`).join('');
+
+  // course table
+  document.getElementById('admin-course-body').innerHTML=COURSES.map(c=>`
+    <tr>
+      <td><span style="font-family:'JetBrains Mono',monospace;font-size:.78rem">${c.code}</span></td>
+      <td><strong>${c.name}</strong></td>
+      <td>${c.faculty}</td>
+      <td style="text-align:center">${c.credits}</td>
+      <td style="text-align:center">${c.students}</td>
+      <td><span class="badge badge-green">${c.status}</span></td>
+      <td><button class="btn btn-sm btn-outline" onclick="showToast('Editing ${c.code}…')">Edit</button></td>
+    </tr>
+  `).join('');
+
+  // user table
+  const allUsers=[
+    {name:'Rahul Sharma',id:'2021CSE001',role:'student',email:'rahul.sharma@muj.ac.in',active:true},
+    {name:'Priya Patel',id:'2021CSE002',role:'student',email:'priya.patel@muj.ac.in',active:true},
+    {name:'Dr. Priya Mehta',id:'F0041',role:'faculty',email:'priya.mehta@muj.ac.in',active:true},
+    {name:'Dr. Ramesh Kumar',id:'F0027',role:'faculty',email:'ramesh.kumar@muj.ac.in',active:true},
+    {name:'Dr. A. Kumar',id:'ADM001',role:'admin',email:'admin@muj.ac.in',active:true},
+  ];
+  window._allUsers=allUsers;
+  renderUserTable(allUsers);
+  populateAdminNotices();
+}
+
+function renderUserTable(list){
+  document.getElementById('admin-user-body').innerHTML=list.map(u=>`
+    <tr>
+      <td><strong>${u.name}</strong></td>
+      <td><span style="font-family:'JetBrains Mono',monospace;font-size:.78rem">${u.id}</span></td>
+      <td><span class="badge ${u.role==='admin'?'badge-red':u.role==='faculty'?'badge-blue':'badge-green'}">${u.role}</span></td>
+      <td style="font-size:.8rem">${u.email}</td>
+      <td><span class="badge badge-green">Active</span></td>
+      <td><button class="btn btn-sm btn-outline" onclick="showToast('Editing ${u.name}…')">Edit</button></td>
+    </tr>
+  `).join('');
+}
+
+function filterUsers(type,el){
+  document.querySelectorAll('.filter-row .filter-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  const list=type==='all'?window._allUsers:window._allUsers.filter(u=>u.role===type);
+  renderUserTable(list);
+}
+
+function populateAdminNotices(){
+  const el=document.getElementById('notices-list-admin');
+  if(el) el.innerHTML=dynamicNotices.map(n=>`
+    <div class="notice-item ${n.urgent?'urgent':n.type}" style="margin-bottom:.85rem">
+      <div class="notice-top"><span class="notice-title">${n.title}</span>
+        <div style="display:flex;gap:.4rem">
+          <span class="badge ${n.urgent?'badge-red':n.type==='event'?'badge-green':'badge-blue'}">${n.tag}</span>
+          <button class="btn btn-sm btn-danger" style="padding:.15rem .5rem;font-size:.7rem" onclick="deleteNotice('${n.title.replace(/'/g,'')}')">Delete</button>
+        </div>
+      </div>
+      <p class="notice-body">${n.body}</p>
+      <div class="notice-meta">📅 ${n.date}</div>
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+// ACTIONS
+// ═══════════════════════════════════════════════════════════
+function saveAttendance(){showToast('Attendance saved successfully!','success')}
+
+function postAnnouncement(){
+  const t=document.getElementById('post-title').value.trim();
+  const b=document.getElementById('post-body').value.trim();
+  if(!t||!b){showToast('Please fill in all fields.','error');return}
+  const newNotice={title:t,body:b,date:new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}),type:'info',tag:'Notice',urgent:document.getElementById('post-priority').value==='Urgent'};
+  dynamicNotices.unshift(newNotice);
+  const el=document.getElementById('fac-posts-list');
+  const div=document.createElement('div');
+  div.className='notice-item info';
+  div.innerHTML=`<div class="notice-top"><span class="notice-title">${t}</span><span class="badge badge-blue">New</span></div><p class="notice-body">${b}</p><div class="notice-meta">📅 Just now · ${document.getElementById('post-course').value.split('—')[0].trim()}</div>`;
+  el.insertBefore(div,el.firstChild);
+  document.getElementById('post-title').value='';
+  document.getElementById('post-body').value='';
+  showToast('Announcement posted!','success');
+}
+
+function postNotice(){
+  const t=document.getElementById('notice-title').value.trim();
+  const b=document.getElementById('notice-body').value.trim();
+  const cat=document.getElementById('notice-cat').value.toLowerCase();
+  if(!t||!b){showToast('Please fill in all fields.','error');return}
+  const newNotice={title:t,body:b,date:new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}),type:cat,tag:document.getElementById('notice-cat').value,urgent:cat==='urgent'};
+  dynamicNotices.unshift(newNotice);
+  populateAdminNotices();
+  document.getElementById('notice-title').value='';
+  document.getElementById('notice-body').value='';
+  showToast('Notice published!','success');
+}
+
+function deleteNotice(title){
+  dynamicNotices=dynamicNotices.filter(n=>n.title.replace(/'/g,'')!==title);
+  populateAdminNotices();
+  showToast('Notice deleted.','warning');
+}
+
+function showAddCourse(){
+  openModal('Add New Course',`
+    <div class="form-group-d"><label>Course Code</label><input type="text" placeholder="e.g. CS401"/></div>
+    <div class="form-group-d"><label>Course Name</label><input type="text" placeholder="e.g. Artificial Intelligence"/></div>
+    <div class="form-row">
+      <div class="form-group-d"><label>Credits</label><input type="number" placeholder="3" min="1" max="6"/></div>
+      <div class="form-group-d"><label>Type</label><select><option>Core</option><option>Lab</option><option>Elective</option></select></div>
+    </div>
+    <div class="form-group-d"><label>Assign Faculty</label><select>${FACULTY_LIST.map(f=>`<option>${f.name}</option>`).join('')}</select></div>
+    <div style="display:flex;gap:.75rem;margin-top:1.25rem">
+      <button class="btn btn-indigo" onclick="showToast('Course added successfully!','success');closeModal()">Add Course</button>
+      <button class="btn btn-ghost" style="color:var(--muted)" onclick="closeModal()">Cancel</button>
+    </div>
+  `);
+}
+
+// ═══════════════════════════════════════════════════════════
+// SEARCH
+// ═══════════════════════════════════════════════════════════
+let searchTimeout;
+function handleSearch(q){
+  clearTimeout(searchTimeout);
+  searchTimeout=setTimeout(()=>{
+    if(!q.trim()) return;
+    const results=[...COURSES.filter(c=>c.name.toLowerCase().includes(q.toLowerCase())||c.code.toLowerCase().includes(q.toLowerCase())).map(c=>({type:'Course',title:c.name,sub:c.code})),...FACULTY_LIST.filter(f=>f.name.toLowerCase().includes(q.toLowerCase())).map(f=>({type:'Faculty',title:f.name,sub:f.dept})),...dynamicNotices.filter(n=>n.title.toLowerCase().includes(q.toLowerCase())).map(n=>({type:'Notice',title:n.title,sub:n.date}))];
+    if(!results.length){showToast(`No results for "${q}"`);}
+    else{openModal(`Search: "${q}"`,results.map(r=>`<div style="display:flex;gap:.75rem;padding:.65rem 0;border-bottom:1px solid var(--border);align-items:center"><span class="badge ${r.type==='Course'?'badge-blue':r.type==='Faculty'?'badge-purple':'badge-amber'}">${r.type}</span><div><div style="font-size:.875rem;font-weight:600">${r.title}</div><div style="font-size:.75rem;color:var(--muted)">${r.sub}</div></div></div>`).join(''));}
+  },350);
+}
+
+// ═══════════════════════════════════════════════════════════
+// NOTIFICATIONS
+// ═══════════════════════════════════════════════════════════
+function showNotifications(){
+  openModal('Notifications 🔔',`
+    ${[{icon:'📢',text:'New announcement: CS301 deadline extended',time:'2 min ago',read:false},{icon:'📅',text:'Mid-Sem exam schedule released',time:'1 hour ago',read:false},{icon:'✅',text:'Attendance updated for CS303',time:'3 hours ago',read:true},{icon:'📚',text:'New resource uploaded in CS302',time:'Yesterday',read:true}].map(n=>`<div style="display:flex;gap:.85rem;padding:.85rem 0;border-bottom:1px solid var(--border);align-items:flex-start"><span style="font-size:1.2rem">${n.icon}</span><div style="flex:1"><div style="font-size:.875rem;${n.read?'':'font-weight:600;color:var(--indigo)'}">${n.text}</div><div style="font-size:.73rem;color:var(--muted);margin-top:.2rem">${n.time}</div></div>${n.read?'':'<div style="width:8px;height:8px;background:var(--amber);border-radius:50%;margin-top:6px;flex-shrink:0"></div>'}</div>`).join('')}
+    <button class="btn btn-sm btn-outline" style="margin-top:1rem;width:100%;justify-content:center" onclick="showToast('All marked as read','success');closeModal()">Mark All Read</button>
+  `);
+}
+
+// ═══════════════════════════════════════════════════════════
+// MODAL
+// ═══════════════════════════════════════════════════════════
+function openModal(title,body){
+  document.getElementById('modal-title').textContent=title;
+  document.getElementById('modal-body').innerHTML=body;
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.classList.add('modal-open');
+}
+function closeModal(){
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.classList.remove('modal-open');
+}
+document.getElementById('modal-overlay').addEventListener('click',function(e){if(e.target===this)closeModal()});
+
+// ═══════════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════════
+let toastTimer;
+function showToast(msg,type='info'){
+  const el=document.getElementById('toast');
+  el.textContent=msg;
+  el.className='';
+  el.classList.add('show',type);
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),3200);
+}
+
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
+// Animate progress bars after DOM load
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    document.querySelectorAll('.progress-fill').forEach(el=>{
+      const w=el.style.width;el.style.width='0';
+      setTimeout(()=>el.style.width=w,100);
+    });
+  },300);
+});
+</script>
+</body>
+</html>
